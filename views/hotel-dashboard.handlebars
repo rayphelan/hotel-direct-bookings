@@ -1,0 +1,71 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header">{{user.name}} Dashboard</h1>
+      <a class="btn btn-primary" id="addRoomButton" href="#" type="button" data-toggle="modal" data-target="#roomModal">
+        <i class="fa fa-plus fa-fw"></i> Add Room </a>
+    </div>    
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      
+      <div class="spacer-10"></div>
+
+      {{#if rooms}}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <th scope="col">Room</th>
+            <th scope="col">Price</th>
+            <th scope="col" class="text-right">Operations</th>
+          </thead>
+          <tbody>
+            {{#each rooms}}
+            <tr>
+              <td>{{roomName}}</td>
+              <td>{{roomPrice}}</td>
+              <td class="text-right">tool..</td>
+            </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+      {{else}}
+      <div class="alert alert-warning">
+        You have no rooms uploaded.
+      </div>
+      {{/if}}
+      
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="roomModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" id="modalContent">      
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+      // Clear modal content after closing
+      $('#roomModal').on('hidden.bs.modal', function () {
+        $('#modalContent').html('');
+      });
+
+      // Add Room
+      $('#addRoomButton').click(() => {
+        $.get('/hotels/room-new', html => {          
+          $('#modalContent').html(html);
+        })
+      });
+
+    })
+    
+</script>
