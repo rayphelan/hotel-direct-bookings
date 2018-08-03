@@ -11,30 +11,9 @@
       
       <div class="spacer-10"></div>
 
-      {{#if rooms}}
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <th scope="col">Room</th>
-            <th scope="col">Price</th>
-            <th scope="col" class="text-right">Operations</th>
-          </thead>
-          <tbody>
-            {{#each rooms}}
-            <tr>
-              <td>{{roomName}}</td>
-              <td>{{roomPrice}}</td>
-              <td class="text-right">tool..</td>
-            </tr>
-            {{/each}}
-          </tbody>
-        </table>
+      <div id="roomList">
+        <div class="preloader"></div>
       </div>
-      {{else}}
-      <div class="alert alert-warning">
-        You have no rooms uploaded.
-      </div>
-      {{/if}}
       
     </div>
   </div>
@@ -65,6 +44,11 @@
           $('#modalContent').html(html);
         })
       });
+
+      // Get Hotel Rooms
+      $.get("/api/hotel/{{user._id}}/rooms?format=web", data => {
+        $('#roomList').html(data);
+      });      
 
     })
     

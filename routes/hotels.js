@@ -8,28 +8,9 @@ var LocalStrategy = require('passport-local').Strategy;
 var Hotel = require('../models/hotel');
 var Room = require('../models/room');
 
-
 // Hotel Dashboard
 router.get('/dashboard', checkIfLoggedIn, function(req, res) {
-  // Get hotel rooms
-  Room.
-    find({hotel: req.user._id}).
-    sort({'_id':-1}).
-    populate('roomtype').
-    exec(function (error, rooms) {
-      // error
-      if (error) {
-        req.flash('error_msg', error);
-        res.render('hotel-dashboard', {
-          error
-        });
-      }
-      // success
-      
-      res.render('hotel-dashboard', {
-        rooms
-      });
-    });
+  res.render('hotel-dashboard');
 });
 
 
@@ -46,14 +27,15 @@ router.post('/room-new', checkIfLoggedIn, (req, res) => {
   var roomPrice = req.body.roomPrice;
 
   // validation
-  req.checkBody('roomName', 'Room Name is required').notEmpty();
-  req.checkBody('roomPrice', 'Room Price is required').notEmpty();
+  req.checkBody('roomName', 'Room Name is required.').notEmpty();
+  req.checkBody('roomPrice', 'Room Price is required.').notEmpty();
   
   var errors = req.validationErrors();
 
   if (errors) {
-    req.flash('custom_errors', errors);
-    res.redirect('/hotels/dashboard');
+    //req.flash('custom_errors', errors);
+    //res.redirect('/hotels/dashboard');
+    return res.status(400).json({ errors: errors });
   } 
   else {
     // Room Instance
@@ -70,8 +52,18 @@ router.post('/room-new', checkIfLoggedIn, (req, res) => {
         req.flash('custom_errors', err);
         res.redirect('/hotels/dashboard');
       }
-      req.flash('success_msg', "Room created");
-      res.redirect('/hotels/dashboard');
+      //req.flash('success_msg', "Room created");
+      //res.redirect('/hotels/dashboard');      
+      Room.find({'hotel':req.user._id})
+        .sort({ '_id': -1 })
+        .exec((err, rooms) => {
+          if (err) {
+            req.flash('custom_errors', err);
+            res.redirect('/hotels/dashboard');
+          }          
+          res.render('hotel-room-list', { layout: false, rooms: rooms });
+      })
+      
     });
   }
   

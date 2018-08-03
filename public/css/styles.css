@@ -134,6 +134,21 @@ h1.page-header {
   background-image: url('../images/loading.png');
 }
 
+/* Footer --------------------------------------------------------- */
+.footer {
+  text-align: center;
+  padding: 10px;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  height:40px;
+  background: #7216a3;
+  border-top: #00c0ef solid 1px;
+}
+.footer .credits {
+  font-size: 16px;
+}
+
 .spacer-10 {
   height: 10px;
 }
@@ -142,7 +157,7 @@ h1.page-header {
 }
 
 .has-error {
-  color: #ec2116;
+  border: 2px solid red;
 }
 
 .bg-dark-transparent {
