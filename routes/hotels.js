@@ -12,6 +12,32 @@ var County = require('../models/county');
 var Category = require('../models/category');
 
 
+//  Browse Hotels
+router.get('/', (req, res) => {
+  // Perform operations in parallel using Async
+  async.parallel({
+    counties: callback => {
+      County.find({}).exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    },
+    hotels: callback => {
+      Hotel.find({}).exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+    res.render('hotels', {
+      counties: results.counties,
+      categories: results.categories,
+      hotels: results.hotels
+    });
+  });
+});
+
+
 // Hotel Dashboard
 router.get('/dashboard', checkIfLoggedIn, function(req, res) {
   // Perform operations in parallel using Async
