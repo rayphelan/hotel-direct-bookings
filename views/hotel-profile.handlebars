@@ -5,24 +5,42 @@
   </div>
   {{/if}}
 
+  <!-- Profile -->
   <div class="row">
     <div class="col-md-12">
       <h1>
-        Profile
+        {{hotel.name}}
       </h1>
-      {{#if user}}
+      {{#if isOwner}}
       <a class="btn btn-warning" href="/hotels/profile/edit">Edit Profile</a>
       <a class="btn btn-primary" href="/hotels/dashboard">Return to Dashboard</a>
       {{/if}}
       <hr>
     </div>
     <div class="col-md-6">
-        <p>{{hotel.name}}, {{hotel.locationName}}, {{hotel.county.name}}</p>
+        <p>{{hotel.locationName}}, {{hotel.county.name}}</p>
         <p>Category: {{hotel.category.name}}</p>
         {{#if hotel.stars}}<p>Stars: {{hotel.stars}}{{/if}}</p>
         {{#if hotel.website}}<p><a href="{{hotel.website}}" target="_blank">{{hotel.website}}</a></p>{{/if}}
     </div>
-
-  </div>    
+  </div>  
+  <!-- Rooms -->
+  {{#if rooms}}
+  <div class="row">
+    {{#each rooms}}
+      <div class="col-md-4 col-sm-12">
+        <div class="card">
+          <!--
+          <img class="card-img-top" src="..." alt="Card image cap">
+          -->
+          <div class="card-body">
+            <h5 class="card-title">{{roomName}}</h5>
+            <p class="card-text">Price: &euro; {{roomPrice}}</p>          
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+  {{/if}}
 
 </div>

@@ -67,6 +67,10 @@ router.get('/profile/edit', checkIfLoggedIn, function (req, res) {
 router.get('/profile/:id', function (req, res) {
   // Perform operations in parallel using Async
   async.parallel({
+    rooms: callback => {
+      Room.find({'hotel': req.params.id})
+      .exec(callback);
+    },
     hotel: callback => {
       Hotel.findById(req.params.id)
       .populate('category county')
@@ -82,10 +86,13 @@ router.get('/profile/:id', function (req, res) {
     if (err) {
       res.status(500).json({ error: err });
     }    
+    
     res.render('hotel-profile', {
       hotel: results.hotel,
+      rooms: results.rooms,
       counties: results.counties,
-      categories: results.categories
+      categories: results.categories,
+      isOwner: (req.user? (req.user._id==req.params.id? true: false): false)
     });
   });
 });

@@ -27,14 +27,7 @@ const app = express();
 // Set up View Engine
 app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({ 
-  defaultLayout: 'layout',
-  helpers: {
-    foo: function () { return 'FOO!'; },
-    bar: function () { return 'BAR!'; },
-    equals: function(a,b) {
-      if(a==b) return this.a;
-    }
-  }
+  defaultLayout: 'layout'
 }));
 app.set('view engine', 'handlebars');
 
