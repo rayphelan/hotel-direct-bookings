@@ -96,6 +96,33 @@ router.get('/county/:id', (req, res) => {
 });
 
 
+//  View Hotel Room
+router.get('/room/:id', (req, res) => {
+  // Perform operations in parallel using Async
+  async.parallel({
+    counties: callback => {
+      County.find().exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    },
+    room: callback => {
+      Room.findById(req.params.id)
+      .exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+    res.render('view-room', {
+      counties: results.counties,
+      categories: results.categories,
+      room: results.room
+    });
+  });
+});
+
+
 // Hotel Dashboard
 router.get('/dashboard', checkIfLoggedIn, function(req, res) {
   // Perform operations in parallel using Async

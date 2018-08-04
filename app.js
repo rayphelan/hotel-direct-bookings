@@ -11,7 +11,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const port = process.env.PORT || 3000;
-
+const compression = require('compression');
 
 // Set up Database
 mongoose.connect('mongodb://rayphelan:Student17119847!@ds259111.mlab.com:59111/hotel-direct-bookings-17119847', {
@@ -23,6 +23,8 @@ const db = mongoose.connection;
 
 // Set up App
 const app = express();
+
+app.use(compression());
 
 // Set up View Engine
 app.set('views', path.join(__dirname, 'views'));
