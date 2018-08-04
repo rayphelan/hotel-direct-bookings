@@ -1,15 +1,44 @@
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var mongoose = require('mongoose');
-var LocalStrategy = require('passport-local').Strategy;
-var async = require('async');
+// Set up variables
+const express         = require('express');
+const router          = express.Router();
+const passport        = require('passport');
+const mongoose        = require('mongoose');
+const LocalStrategy   = require('passport-local').Strategy;
+const async           = require('async');
+
 
 // Models
-var Hotel = require('../models/hotel');
-var Room = require('../models/room');
-var County = require('../models/county');
-var Category = require('../models/category');
+const Hotel     = require('../models/hotel');
+const Room      = require('../models/room');
+const County    = require('../models/county');
+const Category  = require('../models/category');
+
+
+// Check if hotel is already registered
+const checkIfAlreadyRegisered = (req, res, next) => {
+  var username = req.body.username;
+  Hotel.getHotelByUsername(username, (err, hotel) => {
+    if (err) throw (err);
+    if (!hotel) {
+      next();
+    }
+    else {
+      req.flash('error_msg', 'Hotel is already registered with ' + username + '.');
+      res.redirect('/register');
+    }
+  });
+}
+
+
+// Check if logged in
+const checkIfLoggedIn = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    req.flash('error_msg', 'You are not logged in');
+    res.redirect('/login');
+  }
+}
 
 
 //  Browse Hotels
@@ -124,7 +153,7 @@ router.get('/room/:id', (req, res) => {
 
 
 // Hotel Dashboard
-router.get('/dashboard', checkIfLoggedIn, function(req, res) {
+router.get('/dashboard', checkIfLoggedIn, (req, res) => {
   // Perform operations in parallel using Async
   async.parallel({
     counties: callback => {
@@ -147,7 +176,7 @@ router.get('/dashboard', checkIfLoggedIn, function(req, res) {
 
 
 // Edit Hotel Photo page
-router.get('/profile/photo', checkIfLoggedIn, function (req, res) {
+router.get('/profile/photo', checkIfLoggedIn, (req, res) => {
   // Perform operations in parallel using Async
   async.parallel({
     hotel: callback => {
@@ -176,7 +205,7 @@ router.get('/profile/photo', checkIfLoggedIn, function (req, res) {
 
 
 // Edit Hotel Profile
-router.get('/profile/edit', checkIfLoggedIn, function (req, res) {
+router.get('/profile/edit', checkIfLoggedIn, (req, res) => {
   // Perform operations in parallel using Async
   async.parallel({
     hotel: callback => {
@@ -204,7 +233,7 @@ router.get('/profile/edit', checkIfLoggedIn, function (req, res) {
 
 
 // Hotel Profile
-router.get('/profile/:id', function (req, res) {
+router.get('/profile/:id', (req, res) => {
   // Perform operations in parallel using Async
   async.parallel({
     rooms: callback => {
@@ -238,18 +267,17 @@ router.get('/profile/:id', function (req, res) {
 });
 
 
-
-
 // Hotel Room New Page (Ajax)
-router.get('/rooms/new', checkIfLoggedIn, function(req, res) {
+router.get('/rooms/new', checkIfLoggedIn, (req, res) => {
   res.render('hotel-room-new', {layout:false});
 });
+
 
 // Hotel Edit Room Page (Ajax)
 router.get('/rooms/edit/:id', checkIfLoggedIn, (req, res) => {    
   Room.
     find({ '_id': req.params.id }).
-    exec(function (error, room) {
+    exec((error, room) => {
       if(error) {
         res.status(500).json({ error: error });
       }
@@ -262,11 +290,12 @@ router.get('/rooms/edit/:id', checkIfLoggedIn, (req, res) => {
   });
 });
 
+
 // Hotel Delete Room Page (Ajax)
 router.get('/rooms/delete/:id', checkIfLoggedIn, (req, res) => {
   Room.
     find({ '_id': req.params.id }).
-    exec(function (error, room) {
+    exec((error, room) => {
       if (error) {
         res.status(500).json({ error: error });
       }
@@ -276,8 +305,11 @@ router.get('/rooms/delete/:id', checkIfLoggedIn, (req, res) => {
     });
 });
 
+
 // Hotel Room New POST
 router.post('/rooms/new', checkIfLoggedIn, (req, res) => {
+  
+  // Form variables
   var roomName = req.body.roomName;
   var roomPrice = req.body.roomPrice;
   
@@ -317,10 +349,8 @@ router.post('/rooms/new', checkIfLoggedIn, (req, res) => {
           }          
           res.render('hotel-room-list', { layout: false, rooms: rooms });
       })
-      
     });
   }
-  
 });
 
 
@@ -347,11 +377,9 @@ router.put('/rooms/:id', checkIfLoggedIn, (req, res) => {
     req.checkBody('roomName', 'Room Name is required.').notEmpty();
     req.checkBody('roomPrice', 'Room Price is required.').notEmpty();
 
-    var errors = req.validationErrors();
+    const errors = req.validationErrors();
 
     if (errors) {
-      //req.flash('custom_errors', errors);
-      //res.redirect('/hotels/dashboard');
       return res.status(400).json({ errors: errors });
     }
     else {
@@ -364,7 +392,7 @@ router.put('/rooms/:id', checkIfLoggedIn, (req, res) => {
       });
 
       // Update Room
-      Room.findByIdAndUpdate(req.params.id, room, {}, function (err, room) {
+      Room.findByIdAndUpdate(req.params.id, room, {}, (err, room) => {
         if (err) {
           return res.status(500).json({ "error": err });
         }
@@ -388,7 +416,7 @@ router.delete('/rooms/:id', checkIfLoggedIn, (req, res, next) => {
   Room.deleteOne({ 
     "_id": req.params.id,
     "hotel": req.user._id
-  }, function (err) {
+  }, err => {
     if (err) {
       return res.status(401).json({ "error": err });
     }
@@ -398,7 +426,9 @@ router.delete('/rooms/:id', checkIfLoggedIn, (req, res, next) => {
 
 
 // Register
-router.post('/register', checkIfAlreadyRegisered, function (req, res) {
+router.post('/register', checkIfAlreadyRegisered, (req, res) => {
+  
+  // Form variables
   var name = req.body.name;
   var username = req.body.username;
   var password = req.body.password;
@@ -418,7 +448,7 @@ router.post('/register', checkIfAlreadyRegisered, function (req, res) {
 
   if(!website.includes("http://") && !website.includes("https://")) website = 'http://' + website;
 
-  var errors = req.validationErrors();
+  const errors = req.validationErrors();
 
   if (errors) {
 
@@ -447,7 +477,7 @@ router.post('/register', checkIfAlreadyRegisered, function (req, res) {
       })
     });
   } else {
-    var newHotel = Hotel({
+    const newHotel = Hotel({
       name,
       username,
       password,
@@ -458,7 +488,7 @@ router.post('/register', checkIfAlreadyRegisered, function (req, res) {
       website
     });
 
-    Hotel.createHotel(newHotel, function (err, hotel) {
+    Hotel.createHotel(newHotel, (err, hotel) => {
       if (err) throw (err);      
     });
 
@@ -469,42 +499,15 @@ router.post('/register', checkIfAlreadyRegisered, function (req, res) {
 });
 
 
-// Check if hotel is already registered
-function checkIfAlreadyRegisered(req, res, next) {
-  var username = req.body.username;
-  Hotel.getHotelByUsername(username, function (err, hotel) {
-    if (err) throw (err);
-    if (!hotel) {
-      next();
-    }
-    else {
-      req.flash('error_msg', 'Hotel is already registered with ' + username + '.');
-      res.redirect('/register');
-    }
-  });
-}
-
-
-// Check if logged in
-function checkIfLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  } else {
-    req.flash('error_msg', 'You are not logged in');
-    res.redirect('/login');
-  }
-}
-
-
 // Passport Local Strategy
 passport.use(new LocalStrategy(
-  function (username, password, done) {
-    Hotel.getHotelByUsername(username, function (err, hotel) {
+  (username, password, done) => {
+    Hotel.getHotelByUsername(username, (err, hotel) => {
       if (err) throw (err);
       if (!hotel) {
         return done(null, false, { message: 'Username or Password invalid.' });
       }
-      Hotel.comparePassword(password, hotel.password, function (err, isMatch) {
+      Hotel.comparePassword(password, hotel.password, (err, isMatch) => {
         if (err) throw (err);
         if (isMatch) {
           return done(null, hotel);
@@ -524,32 +527,37 @@ router.post('/login',
     failureRedirect: '/login',
     failureFlash: true
   }),
-  function (req, res) {
+  (req, res) => {
     res.redirect('/');
   });
 
+
 // Logout
-router.get('/logout', function (req, res) {
+router.get('/logout', (req, res) => {
   req.logout();
   req.flash('success_msg', 'You have logged out successfully.');
   res.redirect('/login');
 })
 
+
 // Serialize
-passport.serializeUser(function (hotel, done) {
+passport.serializeUser((hotel, done) => {
   done(null, hotel.id);
 });
 
+
 // Deserialize
-passport.deserializeUser(function (id, done) {
-  Hotel.getHotelById(id, function (err, hotel) {
+passport.deserializeUser((id, done) => {
+  Hotel.getHotelById(id, (err, hotel) => {
     done(err, hotel);
   });
 });
 
 
 // Edit Profile
-router.post('/profile/edit', checkIfAlreadyRegisered, function (req, res) {
+router.post('/profile/edit', checkIfAlreadyRegisered, (req, res) => {
+  
+  // Form variables
   var name = req.body.name;
   var county = req.body.county;
   var locationName = req.body.locationName;
@@ -588,7 +596,7 @@ router.post('/profile/edit', checkIfAlreadyRegisered, function (req, res) {
       })
     });
   } else {
-    var updateHotel = Hotel({
+    const updateHotel = Hotel({
       _id: req.user._id,
       name: name,
       username: req.user.username,
@@ -602,21 +610,15 @@ router.post('/profile/edit', checkIfAlreadyRegisered, function (req, res) {
     });
 
     // Update Room
-    Hotel.findByIdAndUpdate(req.user._id, updateHotel, {}, function (err, hotel) {
+    Hotel.findByIdAndUpdate(req.user._id, updateHotel, {}, (err, hotel) => {
       if (err) {
         return res.status(500).json({ "error": err });
       }
       req.flash('success_msg', 'Profile updated');
       res.redirect('/hotels/profile/' + req.user._id);
     });
-
   }
-
 });
-
-
-
-
 
 
 module.exports = router;

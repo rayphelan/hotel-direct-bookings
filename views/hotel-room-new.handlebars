@@ -9,7 +9,7 @@
       <input type="text" class="form-control" id="roomName" name="roomName" placeholder="Room Name" autocomplete="off">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control" id="roomPrice" name="roomPrice" placeholder="Room Price" autocomplete="off">
+      <input type="number" class="form-control" id="roomPrice" name="roomPrice" placeholder="Room Price" autocomplete="off">
     </div>
   
   </form>
@@ -38,8 +38,7 @@
         $('#roomModal').modal('toggle');
         $('#roomList').html(data);
       },
-      error: (err) => {
-        console.log(err);
+      error: (err) => {        
         var error_messages = [];
         $.each(err.responseJSON.errors, (field, error) => {
           $('#' + error.param).parent().addClass('has-error');

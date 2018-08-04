@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-var roomSchema = Schema({
+const roomSchema = Schema({
   _id: Schema.Types.ObjectId,
   hotel: { type: Schema.Types.ObjectId, ref: 'hotels'},
   roomName: String,

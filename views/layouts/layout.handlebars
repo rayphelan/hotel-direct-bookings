@@ -16,7 +16,6 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-
   <!-- Custom styles -->
   <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
   <link href="/css/styles.css" rel="stylesheet">
@@ -26,7 +25,6 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
   <script>window.jQuery || document.write('<script src="https://code.jquery.com/jquery-3.3.1.min.js"><\/script>')</script>
-
 
 </head>
 
@@ -46,11 +44,11 @@
           <a class="p-2 text-dark" href="/counties">Locations</a>
         </nav>
         {{#if user}}
-        <a class="btn btn-outline-primary" href="/hotels/dashboard">{{user.name}} Dashboard</a>
-        <a class="btn btn-outline-primary" href="/hotels/logout">Logout</a>
+          <a class="btn btn-outline-primary" href="/hotels/dashboard">{{user.name}} Dashboard</a>
+          <a class="btn btn-outline-primary" href="/hotels/logout">Logout</a>
         {{else}}
-        <a class="btn btn-outline-primary" href="/login">Hotel Login</a>
-        <a class="btn btn-outline-primary" href="/register">Hotel Sign up</a>
+          <a class="btn btn-outline-primary" href="/login">Hotel Login</a>
+          <a class="btn btn-outline-primary" href="/register">Hotel Sign up</a>
         {{/if}}
       </div>
     </header>
@@ -59,7 +57,7 @@
     <div class="nav-scroller py-1 mb-2">
       <nav class="nav d-flex justify-content-between">
         {{#each categories}}        
-        <a class="p-2 text-light" href="/hotels/category/{{_id}}">{{name}}</a>
+          <a class="p-2 text-light" href="/hotels/category/{{_id}}">{{name}}</a>
         {{/each}}
       </nav>
     </div>
@@ -71,15 +69,18 @@
         <div class="alert alert-success">
           {{success_msg}}
         </div>
-        {{/if}} {{#if error_msg}}
+        {{/if}} 
+        {{#if error_msg}}
         <div class="alert alert-danger">
           {{error_msg}}
         </div>
-        {{/if}} {{#if error}}
+        {{/if}} 
+        {{#if error}}
         <div class="alert alert-danger">
           {{error}}
         </div>
-        {{/if}} {{#if custom_errors}}
+        {{/if}} 
+        {{#if custom_errors}}
         <div class="alert alert-danger">
           {{#each custom_errors}}
             {{msg}}

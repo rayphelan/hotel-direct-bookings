@@ -1,18 +1,17 @@
-var express = require('express');
-var router = express.Router();
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var multer = require('multer');
-var path = require('path');
+const express         = require('express');
+const router          = express.Router();
+const passport        = require('passport');
+const LocalStrategy   = require('passport-local').Strategy;
+const multer          = require('multer');
+const path            = require('path');
 
 // Models
-var Hotel = require('../models/hotel');
-
+const Hotel = require('../models/hotel');
 
 // Set storage engine
 const storage = multer.diskStorage({
   destination: './public/uploads/',
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
@@ -23,20 +22,19 @@ const upload = multer({
   limits: {
     fileSize: 5000000 // 5mb, million bytes
   },
-  fileFilter: function (req, file, cb) {
+  fileFilter: (req, file, cb) => {
     checkFileType(file, cb);
   }
 }).single('hotelPhoto');
 
 // Check file type
-function checkFileType(file, cb) {
+const checkFileType = (file, cb) => {
   // allowed extensions
   const fileTypes = /jpg|jpeg|png|gif/;
   // check ext
   const extname = fileTypes.test(path.extname(file.originalname).toLocaleLowerCase());
   // check mime
   const mimetype = fileTypes.test(file.mimetype);
-
   if (mimetype && extname) {
     return cb(null, true);
   }
@@ -45,9 +43,18 @@ function checkFileType(file, cb) {
   }
 }
 
+// Check permission to delete photo
+const checkPermissionToDelete = (req, res, next) => {
+  if (req.isAuthenticated() && req.params.id == req.user._id) {
+    return next();
+  } else {
+    req.flash('error_msg', 'Not allowed');
+    res.redirect('/login');
+  }
+}
 
 // Check if logged in
-function checkIfLoggedIn(req, res, next) {
+const checkIfLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   } else {
@@ -56,16 +63,15 @@ function checkIfLoggedIn(req, res, next) {
   }
 }
 
-
 // Passport Local Strategy
 passport.use(new LocalStrategy(
-  function (username, password, done) {
-    Hotel.getHotelByUsername(username, function (err, hotel) {
+   (username, password, done) => {
+    Hotel.getHotelByUsername(username, (err, hotel) => {
       if (err) throw (err);
       if (!hotel) {
         return done(null, false, { message: 'Username or Password invalid.' });
       }
-      Hotel.comparePassword(password, hotel.password, function (err, isMatch) {
+      Hotel.comparePassword(password, hotel.password, (err, isMatch) => {
         if (err) throw (err);
         if (isMatch) {
           return done(null, hotel);
@@ -77,20 +83,17 @@ passport.use(new LocalStrategy(
   }
 ));
 
-
 // Serialize
-passport.serializeUser(function (hotel, done) {
+passport.serializeUser((hotel, done) => {
   done(null, hotel.id);
 });
 
 // Deserialize
-passport.deserializeUser(function (id, done) {
-  Hotel.getHotelById(id, function (err, hotel) {
+passport.deserializeUser((id, done) => {
+  Hotel.getHotelById(id, (err, hotel) => {
     done(err, hotel);
   });
 });
-
-
 
 // Upload
 router.post('/upload', checkIfLoggedIn, (req, res) => {
@@ -106,7 +109,7 @@ router.post('/upload', checkIfLoggedIn, (req, res) => {
       }
       else {
         // Save Photo        
-        var updateHotel = Hotel({
+        const updateHotel = Hotel({
           _id: req.user._id,
           name: req.user.name,
           username: req.user.username,
@@ -119,7 +122,7 @@ router.post('/upload', checkIfLoggedIn, (req, res) => {
           photo: req.file.filename
         });
 
-        Hotel.findByIdAndUpdate(req.user._id, updateHotel, {}, function (err, hotel) {
+        Hotel.findByIdAndUpdate(req.user._id, updateHotel, {}, (err, hotel) => {
           if (err) {
             req.flash('custom_errors', err);
             res.redirect('/hotels/profile/photo');
@@ -127,18 +130,16 @@ router.post('/upload', checkIfLoggedIn, (req, res) => {
           req.flash('success_msg', 'Photo uploaded');
           res.redirect('/hotels/profile/photo');
         });
-
       }
     }
   });
 })
 
-
 // Delete Photo
 router.delete('/:id', checkIfLoggedIn, checkPermissionToDelete, (req, res, next) => {
 
   // Update Hotel        
-  var updateHotel = Hotel({
+  const updateHotel = Hotel({
     _id: req.user._id,
     name: req.user.name,
     username: req.user.username,
@@ -151,9 +152,8 @@ router.delete('/:id', checkIfLoggedIn, checkPermissionToDelete, (req, res, next)
     photo: null
   });
 
-  Hotel.findByIdAndUpdate(req.user._id, updateHotel, {}, function (err, hotel) {
-    if (err) {
-      console.log(err);
+  Hotel.findByIdAndUpdate(req.user._id, updateHotel, {}, (err, hotel) => {
+    if (err) {      
       req.flash('custom_errors', err);
       res.redirect('/hotels/profile/photo');
     }
@@ -161,16 +161,5 @@ router.delete('/:id', checkIfLoggedIn, checkPermissionToDelete, (req, res, next)
   });
 
 });
-
-
-// Check permission to delete photo
-function checkPermissionToDelete(req, res, next) {
-  if (req.isAuthenticated() && req.params.id == req.user._id) {
-    return next();
-  } else {
-    req.flash('error_msg', 'Not allowed');
-    res.redirect('/login');
-  }
-}
 
 module.exports = router;

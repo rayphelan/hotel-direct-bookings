@@ -1,14 +1,11 @@
 // Index Routes
-const express = require('express');
-const router = express.Router();
+const express   = require('express');
+const router    = express.Router();
+const async     = require('async');
 
-var async = require('async');
-
-var Hotel = require('../models/hotel');
-var County = require('../models/county');
-var Category = require('../models/category');
-
-
+// Models
+const County    = require('../models/county');
+const Category  = require('../models/category');
 
 //  Counties Page
 router.get('/', (req, res)=>{
@@ -30,7 +27,6 @@ router.get('/', (req, res)=>{
     });
   });
 });
-
 
 // Export
 module.exports = router;

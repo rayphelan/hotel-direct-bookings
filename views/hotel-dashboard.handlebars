@@ -9,13 +9,10 @@
   </div>
   <div class="row">
     <div class="col-lg-12">
-      
       <div class="spacer-10"></div>
-
       <div id="roomList">
         <div class="preloader"></div>
       </div>
-      
     </div>
   </div>
 </div>
@@ -34,23 +31,23 @@
 
   $(function () {
 
-      // Clear modal content after closing
-      $('#roomModal').on('hidden.bs.modal', function () {
-        $('#modalContent').html('');
-      });
+    // Clear modal content after closing
+    $('#roomModal').on('hidden.bs.modal', function () {
+      $('#modalContent').html('');
+    });
 
-      // Add Room
-      $('#addRoomButton').click(() => {
-        $.get('/hotels/rooms/new', html => {                    
-          $('#modalContent').html(html);
-        })
-      });
+    // Add Room
+    $('#addRoomButton').click(() => {
+      $.get('/hotels/rooms/new', html => {                    
+        $('#modalContent').html(html);
+      })
+    });
 
-      // Get Hotel Rooms
-      $.get("/api/hotel/{{user._id}}/rooms?format=web", data => {
-        $('#roomList').html(data);
-      });      
+    // Get Hotel Rooms
+    $.get("/api/hotel/{{user._id}}/rooms?format=web", data => {
+      $('#roomList').html(data);
+    });      
 
-    })
+  })
     
 </script>

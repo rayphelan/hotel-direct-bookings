@@ -1,13 +1,12 @@
-// Index Routes
-const express = require('express');
-const router = express.Router();
+// Set up variables
+const express   = require('express');
+const router    = express.Router();
+const async     = require('async');
 
-var async = require('async');
-
-var Hotel = require('../models/hotel');
-var County = require('../models/county');
-var Category = require('../models/category');
-
+// Models
+var Hotel     = require('../models/hotel');
+var County    = require('../models/county');
+var Category  = require('../models/category');
 
 
 //  Home Page
@@ -62,7 +61,6 @@ router.get('/login', (req, res)=>{
 
 //  Registration Page
 router.get('/register', (req, res) => {
-  
   // Perform operations in parallel using Async
   async.parallel({
     counties: callback => {
