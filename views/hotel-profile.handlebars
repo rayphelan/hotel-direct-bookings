@@ -8,39 +8,57 @@
   <!-- Profile -->
   <div class="row">
     <div class="col-md-12">
+      {{#if isOwner}}
+      <div class="float-right">
+        <a class="btn btn-outline-primary" href="/hotels/profile/edit">Edit Profile</a>
+        <a class="btn btn-outline-primary" href="/hotels/profile/photo">Edit Photo</a>
+        <a class="btn btn-outline-primary" href="/hotels/dashboard">Return to Dashboard</a>
+      </div>
+      {{/if}}
       <h1>
         {{hotel.name}}
       </h1>
-      {{#if isOwner}}
-      <a class="btn btn-warning" href="/hotels/profile/edit">Edit Profile</a>
-      <a class="btn btn-primary" href="/hotels/dashboard">Return to Dashboard</a>
-      {{/if}}
-      <hr>
     </div>
-    <div class="col-md-6">
-        <p>{{hotel.locationName}}, {{hotel.county.name}}</p>
-        <p>Category: {{hotel.category.name}}</p>
-        {{#if hotel.stars}}<p>Stars: {{hotel.stars}}{{/if}}</p>
-        {{#if hotel.website}}<p><a href="{{hotel.website}}" target="_blank">{{hotel.website}}</a></p>{{/if}}
-    </div>
-  </div>  
-  <!-- Rooms -->
-  {{#if rooms}}
-  <div class="row">
-    {{#each rooms}}
-      <div class="col-md-4 col-sm-12">
-        <div class="card">
-          <!--
-          <img class="card-img-top" src="..." alt="Card image cap">
-          -->
-          <div class="card-body">
-            <h5 class="card-title">{{roomName}}</h5>
-            <p class="card-text">Price: &euro; {{roomPrice}}</p>          
+    
+    <div class="col-md-12">
+
+      <div class="card">
+        <img class="card-img-top" src="/images/pool.jpg" alt="Card image cap">        
+        <div class="card-body">
+
+          {{#if hotel.website}}
+          <a href="{{hotel.website}}" class="btn btn-raised btn-primary float-right" target="_blank">Bookings</a>
+          {{/if}}
+
+          <h5 class="card-title"><p>{{hotel.locationName}}, {{hotel.county.name}}</p></h5>
+          
+          <p class="card-text">Category: {{hotel.category.name}}</p>
+
+          {{#if hotel.stars}}<p class="card-text">Stars: {{hotel.stars}}</p>{{/if}}
+          
+          <!-- Rooms -->
+          {{#if rooms}}
+          <div class="row">
+            {{#each rooms}}
+            <div class="col-md-4 col-sm-12">
+              <div class="card">
+                <!--
+                    <img class="card-img-top" src="..." alt="Card image cap">
+                    -->
+                <div class="card-body">
+                  <h5 class="card-title">{{roomName}}</h5>
+                  <p class="card-text">Price: &euro; {{roomPrice}}</p>
+                </div>
+              </div>
+            </div>
+            {{/each}}
           </div>
+          {{/if}}
+
         </div>
       </div>
-    {{/each}}
-  </div>
-  {{/if}}
+
+    </div>
+  </div>  
 
 </div>
