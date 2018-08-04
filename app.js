@@ -85,11 +85,13 @@ const hotels = require('./routes/hotels');
 const api = require('./api/api');
 const hotel_photos = require('./routes/hotel_photos');
 const room_photos = require('./routes/room_photos');
+const categories = require('./routes/categories');
 app.use('/', index);
 app.use('/hotels', hotels);
 app.use('/api', api);
 app.use('/hotel_photos', hotel_photos);
 app.use('/room_photos', room_photos);
+app.use('/categories', categories);
 
 
 
