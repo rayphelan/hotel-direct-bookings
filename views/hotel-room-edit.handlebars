@@ -1,15 +1,16 @@
+{{#each room}}
 <div class="modal-header">
   <h5 class="modal-title" id="exampleModalLabel">Edit Room</h5>
 </div>
 <div class="modal-body">
 
-  <form id="newRoomForm" action="/hotels/room-edit" method="POST" autocomplete="off">
-
+  <form id="editRoomForm" autocomplete="off">
+    
     <div class="form-group">
-      <input type="text" class="form-control" id="roomName" name="roomName" placeholder="Room Name" autocomplete="off">
+      <input type="text" class="form-control" id="roomName" name="roomName" placeholder="Room Name" autocomplete="off" value="{{roomName}}">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control" id="roomPrice" name="roomPrice" placeholder="Room Price" autocomplete="off">
+      <input type="text" class="form-control" id="roomPrice" name="roomPrice" placeholder="Room Price" autocomplete="off" value="{{roomPrice}}">
     </div>
 
   </form>
@@ -22,8 +23,30 @@
 
 <script>
 
-  $('#saveButton').click(function () {
-    $('#newRoomForm').submit();
-  })
+  $('#saveButton').click(function() {
+    
+    // Send Post request with room
+    $.ajax({
+      url: "/hotels/rooms/{{_id}}",
+      method: 'PUT',
+      data: {
+        "roomName": $('#roomName').val(),
+        "roomPrice": $('#roomPrice').val(),        
+      },
+      success: data => {
+        $('#roomModal').modal('toggle');
+        $('#roomList').html(data);
+      },
+      error: (err) => {
+        var error_messages = [];
+        $.each(err.responseJSON.errors, (field, error) => {
+          $('#' + error.param).parent().addClass('has-error');
+          error_messages.push(error.msg);
+        });
+        $('#errorMessage').html('<p class="text-danger">' + error_messages.join(' ') + '</p>');
+      }
+    });
+  });
 
 </script>
+{{/each}}

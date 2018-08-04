@@ -40,7 +40,7 @@
 
       // Add Room
       $('#addRoomButton').click(() => {
-        $.get('/hotels/room-new', html => {          
+        $.get('/hotels/rooms/new', html => {                    
           $('#modalContent').html(html);
         })
       });

@@ -38,7 +38,7 @@ module.exports.getHotelRooms = function (req, res, cb) {
   Room.
     find({'hotel': req.params.hotel_id}).
     sort({ '_id': -1 }).
-    exec(function (error, rooms) {
+    exec(function (error, rooms) {      
       return error ? cb(error) : cb(null, rooms);
     });
 

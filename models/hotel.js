@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
+var Schema = mongoose.Schema;
 
 var HotelSchema = mongoose.Schema({
   username: {
@@ -9,12 +10,24 @@ var HotelSchema = mongoose.Schema({
   password: {
     type: String
   },
-  email: {
-    type: String
+  stars: {
+    type: Number
   },
   name: {
     type: String
+  },
+  category: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'categories' 
+  },
+  county: {
+    type: Schema.Types.ObjectId,
+    ref: 'counties'
+  },
+  locationName: {
+    type: String
   }
+
 });
 
 var Hotel = module.exports = mongoose.model('Hotel', HotelSchema);

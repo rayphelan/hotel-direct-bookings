@@ -15,14 +15,40 @@ router.get('/dashboard', checkIfLoggedIn, function(req, res) {
 
 
 // Hotel Room New Page (Ajax)
-router.get('/room-new', checkIfLoggedIn, function(req, res) {
+router.get('/rooms/new', checkIfLoggedIn, function(req, res) {
   res.render('hotel-room-new', {layout:false});
 });
 
+// Hotel Edit Room Page (Ajax)
+router.get('/rooms/edit/:id', checkIfLoggedIn, (req, res) => {    
+  Room.
+    find({ '_id': req.params.id }).
+    exec(function (error, room) {
+      if(error) {
+        res.status(500).json({ error: error });
+      }
+      else {      
+        res.render('hotel-room-edit', { layout: false, room: room });
+      }
+  });
+});
 
+// Hotel Delete Room Page (Ajax)
+router.get('/rooms/delete/:id', checkIfLoggedIn, (req, res) => {
+  Room.
+    find({ '_id': req.params.id }).
+    exec(function (error, room) {
+      if (error) {
+        res.status(500).json({ error: error });
+      }
+      else {        
+        res.render('hotel-room-delete', { layout: false, room: room });
+      }
+    });
+});
 
 // Hotel Room New POST
-router.post('/room-new', checkIfLoggedIn, (req, res) => {
+router.post('/rooms/new', checkIfLoggedIn, (req, res) => {
   var roomName = req.body.roomName;
   var roomPrice = req.body.roomPrice;
 
@@ -51,9 +77,7 @@ router.post('/room-new', checkIfLoggedIn, (req, res) => {
       if (err) {
         req.flash('custom_errors', err);
         res.redirect('/hotels/dashboard');
-      }
-      //req.flash('success_msg', "Room created");
-      //res.redirect('/hotels/dashboard');      
+      }    
       Room.find({'hotel':req.user._id})
         .sort({ '_id': -1 })
         .exec((err, rooms) => {
@@ -70,6 +94,64 @@ router.post('/room-new', checkIfLoggedIn, (req, res) => {
 });
 
 
+// Update room
+router.put('/rooms/:id', checkIfLoggedIn, (req, res) => {
+
+  var roomName = req.body.roomName;
+  var roomPrice = req.body.roomPrice;
+
+  // validation
+  req.checkBody('roomName', 'Room Name is required.').notEmpty();
+  req.checkBody('roomPrice', 'Room Price is required.').notEmpty();
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+    //req.flash('custom_errors', errors);
+    //res.redirect('/hotels/dashboard');
+    return res.status(400).json({ errors: errors });
+  }
+  else {
+
+    // Room Instance
+    room = new Room({
+      roomName: roomName,      
+      roomPrice: roomPrice      
+    });
+
+    // Update Room
+    Room.findByIdAndUpdate(req.params.id, room, {}, function (err, room) {
+      if (err) {
+        return res.status(500).json({ "error": err });
+      }
+      Room.find({ 'hotel': req.user._id })
+        .sort({ '_id': -1 })
+        .exec((err, rooms) => {
+          if (err) {
+            req.flash('custom_errors', err);
+            res.redirect('/hotels/dashboard');
+          }
+          res.render('hotel-room-list', { layout: false, rooms: rooms });
+        })
+    });
+  }
+});
+
+
+//  Delete Room
+router.delete('/rooms/:id', checkIfLoggedIn, (req, res, next) => {
+  Room.deleteOne({ 
+    "_id": req.params.id,
+    "hotel": req.user._id
+  }, function (err) {
+    if (err) {
+      return res.status(401).json({ "error": err });
+    }
+    res.send(req.params.id);
+  });
+});
+
+
 // Register
 router.post('/register', checkIfAlreadyRegisered, function (req, res) {
   var name = req.body.name;
@@ -77,8 +159,6 @@ router.post('/register', checkIfAlreadyRegisered, function (req, res) {
   var username = req.body.username;
   var password = req.body.password;
   var password2 = req.body.password;
-
-  console.log(req.body)
 
   // validation
   req.checkBody('name', 'Name is required').notEmpty();
@@ -104,8 +184,7 @@ router.post('/register', checkIfAlreadyRegisered, function (req, res) {
     });
 
     Hotel.createHotel(newHotel, function (err, hotel) {
-      if (err) throw (err);
-      console.log(hotel);
+      if (err) throw (err);      
     });
 
     req.flash('success_msg', 'Success! You are registered. You can log in now.');
