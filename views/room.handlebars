@@ -8,6 +8,9 @@
   <form id="roomPhotoForm" action="/room_photos/upload/{{room._id}}" enctype="multipart/form-data" method="POST">
     <div class="row">
       <div class="col-md-12">
+        <div class="float-right">
+          <a href="/hotels/profile/{{user._id}}" class="btn btn-outline-primary">Back to Profile</a>
+        </div>
         <h1>
           {{room.roomName}}
         </h1>

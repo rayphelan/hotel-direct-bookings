@@ -253,7 +253,7 @@ router.put('/rooms/:id', checkIfLoggedIn, (req, res) => {
       room = new Room({
         roomName: roomName,
         roomPrice: roomPrice,
-        photo: old_room.photo
+        photo: results.old_room.photo
       });
 
       // Update Room
