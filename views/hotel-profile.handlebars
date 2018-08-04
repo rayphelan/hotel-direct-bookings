@@ -1,0 +1,28 @@
+<div class="container bg-light p50">  
+  {{#if errors}}
+  <div class="alert alert-danger">
+    {{#each errors}} {{msg}}. {{/each}}
+  </div>
+  {{/if}}
+
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        Profile
+      </h1>
+      {{#if user}}
+      <a class="btn btn-warning" href="/hotels/profile/edit">Edit Profile</a>
+      <a class="btn btn-primary" href="/hotels/dashboard">Return to Dashboard</a>
+      {{/if}}
+      <hr>
+    </div>
+    <div class="col-md-6">
+        <p>{{hotel.name}}, {{hotel.locationName}}, {{hotel.county.name}}</p>
+        <p>Category: {{hotel.category.name}}</p>
+        {{#if hotel.stars}}<p>Stars: {{hotel.stars}}{{/if}}</p>
+        {{#if hotel.website}}<p><a href="{{hotel.website}}" target="_blank">{{hotel.website}}</a></p>{{/if}}
+    </div>
+
+  </div>    
+
+</div>

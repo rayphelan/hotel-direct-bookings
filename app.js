@@ -12,6 +12,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const port = process.env.PORT || 3000;
 
+
 // Set up Database
 mongoose.connect('mongodb://rayphelan:Student17119847!@ds259111.mlab.com:59111/hotel-direct-bookings-17119847', {
   useNewUrlParser: true
@@ -25,7 +26,16 @@ const app = express();
 
 // Set up View Engine
 app.set('views', path.join(__dirname, 'views'));
-app.engine('handlebars', exphbs({ defaultLayout: 'layout' }));
+app.engine('handlebars', exphbs({ 
+  defaultLayout: 'layout',
+  helpers: {
+    foo: function () { return 'FOO!'; },
+    bar: function () { return 'BAR!'; },
+    equals: function(a,b) {
+      if(a==b) return this.a;
+    }
+  }
+}));
 app.set('view engine', 'handlebars');
 
 // Set up Body Parser and Cookie Parser

@@ -167,6 +167,9 @@ h1.page-header {
 .mt-50 {
   margin-top:50px;
 }
+.p50 {
+  padding:50px;
+}
 
 /* Login Form */
 .panel h2{ color:#444444; font-size:18px; margin:0 0 8px 0;}

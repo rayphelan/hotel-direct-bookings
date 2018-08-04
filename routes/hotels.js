@@ -3,15 +3,94 @@ var router = express.Router();
 var passport = require('passport');
 var mongoose = require('mongoose');
 var LocalStrategy = require('passport-local').Strategy;
+var async = require('async');
 
 // Models
 var Hotel = require('../models/hotel');
 var Room = require('../models/room');
+var County = require('../models/county');
+var Category = require('../models/category');
 
 // Hotel Dashboard
 router.get('/dashboard', checkIfLoggedIn, function(req, res) {
-  res.render('hotel-dashboard');
+  // Perform operations in parallel using Async
+  async.parallel({
+    counties: callback => {
+      County.find({}).exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+    res.render('hotel-dashboard', {
+      counties: results.counties,
+      categories: results.categories
+    });
+  });
+
 });
+
+
+
+// Edit Hotel Profile
+router.get('/profile/edit', checkIfLoggedIn, function (req, res) {
+  // Perform operations in parallel using Async
+  async.parallel({
+    hotel: callback => {
+      Hotel.findById(req.user._id)
+        .populate('category county')
+        .exec(callback);
+    },
+    counties: callback => {
+      County.find({}).exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+    res.render('hotel-profile-edit', {
+      hotel: results.hotel,
+      counties: results.counties,
+      categories: results.categories
+    });
+  });
+});
+
+
+// Hotel Profile
+router.get('/profile/:id', function (req, res) {
+  // Perform operations in parallel using Async
+  async.parallel({
+    hotel: callback => {
+      Hotel.findById(req.params.id)
+      .populate('category county')
+      .exec(callback);
+    },
+    counties: callback => {
+      County.find({}).exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }    
+    res.render('hotel-profile', {
+      hotel: results.hotel,
+      counties: results.counties,
+      categories: results.categories
+    });
+  });
+});
+
+
 
 
 // Hotel Room New Page (Ajax)
@@ -28,7 +107,10 @@ router.get('/rooms/edit/:id', checkIfLoggedIn, (req, res) => {
         res.status(500).json({ error: error });
       }
       else {      
-        res.render('hotel-room-edit', { layout: false, room: room });
+        res.render('hotel-room-edit', { 
+          layout: false, 
+          room: room 
+        });
       }
   });
 });
@@ -155,10 +237,14 @@ router.delete('/rooms/:id', checkIfLoggedIn, (req, res, next) => {
 // Register
 router.post('/register', checkIfAlreadyRegisered, function (req, res) {
   var name = req.body.name;
-  var email = req.body.email;
   var username = req.body.username;
   var password = req.body.password;
   var password2 = req.body.password;
+  var county = req.body.county;
+  var locationName = req.body.locationName;
+  var category = req.body.category;
+  var stars = req.body.stars;
+  var website = req.body.website;
 
   // validation
   req.checkBody('name', 'Name is required').notEmpty();
@@ -167,20 +253,46 @@ router.post('/register', checkIfAlreadyRegisered, function (req, res) {
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
 
+  if(!website.includes("http://") && !website.includes("https://")) website = 'http://' + website;
+
   var errors = req.validationErrors();
 
   if (errors) {
-    console.log(errors)
-    res.render('register', {
-      errors,
-      name,
-      email 
-    })
+
+    async.parallel({
+      counties: callback => {
+        County.find({}).exec(callback);
+      },
+      categories: callback => {
+        Category.find({}).exec(callback);
+      }
+    }, (err, results) => {
+      if (err) {
+        res.status(500).json({ error: err });
+      }
+      res.render('register', {
+        counties: results.counties,
+        categories: results.categories,
+        errors,
+        name,
+        username,
+        county,
+        locationName,
+        category,
+        stars,
+        website
+      })
+    });
   } else {
     var newHotel = Hotel({
       name,
       username,
-      password
+      password,
+      county,
+      locationName,
+      category,
+      stars,
+      website
     });
 
     Hotel.createHotel(newHotel, function (err, hotel) {
@@ -272,5 +384,70 @@ passport.deserializeUser(function (id, done) {
   });
 });
 
+
+// Edit Profile
+router.post('/profile/edit', checkIfAlreadyRegisered, function (req, res) {
+  var name = req.body.name;
+  var county = req.body.county;
+  var locationName = req.body.locationName;
+  var category = req.body.category;
+  var stars = req.body.stars;
+  var website = req.body.website;
+
+  // validation
+  req.checkBody('name', 'Name is required').notEmpty();
+
+  if (website && (!website.includes("http://") && !website.includes("https://"))) website = 'http://' + website;
+
+  var errors = req.validationErrors();
+
+  if (errors) {
+
+    async.parallel({
+      counties: callback => {
+        County.find({}).exec(callback);
+      },
+      categories: callback => {
+        Category.find({}).exec(callback);
+      },
+      hotel: callback => {
+        Hotel.findById(req.user._id).exec(callback);
+      }
+    }, (err, results) => {
+      if (err) {
+        res.status(500).json({ error: err });
+      }
+      res.render('hotel-profile-edit', {
+        counties: results.counties,
+        categories: results.categories,
+        errors,
+        hotel: results.hotel
+      })
+    });
+  } else {
+    var updateHotel = Hotel({
+      _id: req.user._id,
+      name: name,
+      username: req.user.username,
+      password: req.user.password,
+      county,
+      locationName,
+      category,
+      stars,
+      website
+    });
+
+    // Update Room
+    Hotel.findByIdAndUpdate(req.user._id, updateHotel, {}, function (err, hotel) {
+      if (err) {
+        return res.status(500).json({ "error": err });
+      }
+      req.flash('success_msg', 'Profile updated');
+      res.redirect('/hotels/profile/' + req.user._id);
+    });
+
+  }
+
+});
 
 module.exports = router;

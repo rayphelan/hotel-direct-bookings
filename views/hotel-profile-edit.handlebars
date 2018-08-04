@@ -5,13 +5,13 @@
   </div>
   {{/if}}
 
-  <form id="registerForm" action="/hotels/register" method="POST" autocomplete="off">
+  <form id="registerForm" action="/hotels/profile/edit" method="POST" autocomplete="off">
     <div class="row">
       <div class="col-md-12">
         <h1>
-          <span class="fa fa-sign-in"></span> Register
+          Edit Profile
         </h1>
-        <p>Please enter your details</p>
+        <p>You can edit your profile details here.</p>
         <hr>
       </div>
     </div>
@@ -19,19 +19,11 @@
       <div class="col-md-6">
         <div class="form-group">
           <label>Hotel Name</label>
-          <input type="text" class="form-control" placeholder="name" name="name" value="{{name}}">
+          <input type="text" class="form-control" placeholder="name" name="name" value="{{hotel.name}}">
         </div>
         <div class="form-group">
-          <label>Email</label>
-          <input type="email" class="form-control" placeholder="Email" name="username" value="{{username}}">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" class="form-control" placeholder="Password" name="password" value="{{password}}">
-        </div>
-        <div class="form-group">
-          <label>Confirm Password</label>
-          <input type="password" class="form-control" placeholder="Confirm Password" name="password2" value="{{password2}}">
+          <label>Website</label>
+          <input type="text" class="form-control" placeholder="Website" name="website" value="{{hotel.website}}">
         </div>
       </div>
       <div class="col-md-6">
@@ -46,7 +38,7 @@
         </div>
         <div class="form-group">
           <label>Location Name</label>
-          <input type="text" class="form-control" placeholder="Location name" name="locationName" value="{{locationName}}">
+          <input type="text" class="form-control" placeholder="Location name" name="locationName" value="{{hotel.locationName}}">
         </div>
         <div class="form-group">
           <label>Category</label>
@@ -68,22 +60,14 @@
             <option value="5">5</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Website</label>
-          <input type="text" class="form-control" placeholder="Website" name="website" value="{{website}}">
-        </div>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
-        <button type="submit" class="btn btn-primary bg-warning">Register</button>
+        <button type="submit" class="btn btn-warning">Save</button>
+        <a href="/hotels/profile/{{user._id}}" class="btn btn-secondary">Cancel</a>
       </div>
     </div>
       
   </form>
 </div>
-
-<p class="botto-text">
-  Already registered?
-  <a href="/login">Login</a>
-</p>

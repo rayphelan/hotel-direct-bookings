@@ -7,26 +7,23 @@ var HotelSchema = mongoose.Schema({
     type: String,
     index: true
   },
-  password: {
-    type: String
-  },
-  stars: {
-    type: Number
-  },
-  name: {
-    type: String
-  },
+  password: String
+  ,
+  stars:  Number
+  ,
+  name: String
+  ,
   category: { 
     type: Schema.Types.ObjectId, 
-    ref: 'categories' 
+    ref: 'category' 
   },
   county: {
     type: Schema.Types.ObjectId,
-    ref: 'counties'
+    ref: 'county'
   },
-  locationName: {
-    type: String
-  }
+  locationName: String
+  ,
+  website: String
 
 });
 
