@@ -12,7 +12,8 @@
         <td>{{roomName}}</td>
         <td>{{roomPrice}}</td>
         <td class="text-right">
-          <a href="#" class="btn btn-warning" onclick="editRoomFunction('{{_id}}')" type="button" data-toggle="modal" data-target="#roomModal">Edit</a>
+          <a href="/room_photos/{{_id}}" class="btn btn-primary" type="button">Photo</a>
+          <a href="#" class="btn btn-warning" onclick="editRoomFunction('{{_id}}')">Edit Room</a>
           <a href="#" class="btn btn-danger" onclick="deleteRoomFunction('{{_id}}')" type="button" data-toggle="modal" data-target="#roomModal">Delete</a>
         </td>
       </tr>

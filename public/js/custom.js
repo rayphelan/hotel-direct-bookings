@@ -40,3 +40,18 @@ const deleteHotelPhoto = id => {
     }
   });
 }
+
+
+// Delete Room Photo
+const deleteRoomPhoto = id => {
+  $.ajax({
+    url: "/room_photos/" + id,
+    method: 'DELETE',
+    success: data => {
+      window.location.reload(true);
+    },
+    error: () => {
+      console.log('Can not delete photo');
+    }
+  });
+}

@@ -10,7 +10,7 @@ var Hotel = require('../models/hotel');
 var Room = require('../models/room');
 var County = require('../models/county');
 var Category = require('../models/category');
-var HotelPhoto = require('../models/hotel_photo');
+
 
 // Hotel Dashboard
 router.get('/dashboard', checkIfLoggedIn, function(req, res) {
@@ -173,7 +173,7 @@ router.get('/rooms/delete/:id', checkIfLoggedIn, (req, res) => {
 router.post('/rooms/new', checkIfLoggedIn, (req, res) => {
   var roomName = req.body.roomName;
   var roomPrice = req.body.roomPrice;
-
+  
   // validation
   req.checkBody('roomName', 'Room Name is required.').notEmpty();
   req.checkBody('roomPrice', 'Room Price is required.').notEmpty();
@@ -191,7 +191,8 @@ router.post('/rooms/new', checkIfLoggedIn, (req, res) => {
       _id: new mongoose.Types.ObjectId(),
       roomName: roomName,
       hotel: req.user.id,
-      roomPrice: roomPrice
+      roomPrice: roomPrice,
+      photo: ''
     });
 
     // Save Room
@@ -219,44 +220,59 @@ router.post('/rooms/new', checkIfLoggedIn, (req, res) => {
 // Update room
 router.put('/rooms/:id', checkIfLoggedIn, (req, res) => {
 
-  var roomName = req.body.roomName;
-  var roomPrice = req.body.roomPrice;
+  // Perform operations in parallel using Async
+  async.parallel({
+    old_room: callback => {
+      Room.findById(req.params.id)
+        .exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      req.flash('custom_errors', err);
+      res.redirect('/hotels/dashboard');
+    }
+    
+    // update room
+    var roomName = req.body.roomName;
+    var roomPrice = req.body.roomPrice;
 
-  // validation
-  req.checkBody('roomName', 'Room Name is required.').notEmpty();
-  req.checkBody('roomPrice', 'Room Price is required.').notEmpty();
+    // validation
+    req.checkBody('roomName', 'Room Name is required.').notEmpty();
+    req.checkBody('roomPrice', 'Room Price is required.').notEmpty();
 
-  var errors = req.validationErrors();
+    var errors = req.validationErrors();
 
-  if (errors) {
-    //req.flash('custom_errors', errors);
-    //res.redirect('/hotels/dashboard');
-    return res.status(400).json({ errors: errors });
-  }
-  else {
+    if (errors) {
+      //req.flash('custom_errors', errors);
+      //res.redirect('/hotels/dashboard');
+      return res.status(400).json({ errors: errors });
+    }
+    else {
 
-    // Room Instance
-    room = new Room({
-      roomName: roomName,      
-      roomPrice: roomPrice      
-    });
+      // Room Instance
+      room = new Room({
+        roomName: roomName,
+        roomPrice: roomPrice,
+        photo: old_room.photo
+      });
 
-    // Update Room
-    Room.findByIdAndUpdate(req.params.id, room, {}, function (err, room) {
-      if (err) {
-        return res.status(500).json({ "error": err });
-      }
-      Room.find({ 'hotel': req.user._id })
-        .sort({ '_id': -1 })
-        .exec((err, rooms) => {
-          if (err) {
-            req.flash('custom_errors', err);
-            res.redirect('/hotels/dashboard');
-          }
-          res.render('hotel-room-list', { layout: false, rooms: rooms });
-        })
-    });
-  }
+      // Update Room
+      Room.findByIdAndUpdate(req.params.id, room, {}, function (err, room) {
+        if (err) {
+          return res.status(500).json({ "error": err });
+        }
+        Room.find({ 'hotel': req.user._id })
+          .sort({ '_id': -1 })
+          .exec((err, rooms) => {
+            if (err) {
+              req.flash('custom_errors', err);
+              res.redirect('/hotels/dashboard');
+            }
+            res.render('hotel-room-list', { layout: false, rooms: rooms });
+          })
+      });
+    }
+  }); 
 });
 
 

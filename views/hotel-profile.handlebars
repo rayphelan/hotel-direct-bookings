@@ -44,9 +44,11 @@
             {{#each rooms}}
             <div class="col-md-4 col-sm-12">
               <div class="card">
-                <!--
-                    <img class="card-img-top" src="..." alt="Card image cap">
-                    -->
+                
+                {{#if photo}}
+                <img class="card-img-top" src="/uploads/{{photo}}" alt="{{roomName}}">
+                {{/if}}
+
                 <div class="card-body">
                   <h5 class="card-title">{{roomName}}</h5>
                   <p class="card-text">Price: &euro; {{roomPrice}}</p>

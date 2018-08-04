@@ -1,18 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var mongoose = require('mongoose');
 var LocalStrategy = require('passport-local').Strategy;
-var async = require('async');
 var multer = require('multer');
 var path = require('path');
 
 // Models
 var Hotel = require('../models/hotel');
-var Room = require('../models/room');
-var County = require('../models/county');
-var Category = require('../models/category');
-
 
 
 // Set storage engine
@@ -141,7 +135,7 @@ router.post('/upload', checkIfLoggedIn, (req, res) => {
 
 
 // Delete Photo
-router.delete('/:id', checkIfLoggedIn, (req, res, next) => {
+router.delete('/:id', checkIfLoggedIn, checkPermissionToDelete, (req, res, next) => {
 
   // Update Hotel        
   var updateHotel = Hotel({
