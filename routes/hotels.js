@@ -39,10 +39,6 @@ router.get('/dashboard', checkIfLoggedIn, function(req, res) {
 router.get('/profile/photo', checkIfLoggedIn, function (req, res) {
   // Perform operations in parallel using Async
   async.parallel({
-    hotel_photo: callback => {
-      HotelPhoto.findOne({'hotel':req.user._id})
-      .exec(callback);
-    },
     hotel: callback => {
       Hotel.findById(req.user._id)
         .populate('category county')
