@@ -23,7 +23,8 @@ var HotelSchema = mongoose.Schema({
   },
   locationName: String
   ,
-  website: String
+  website: String,
+  photo: String
 
 });
 

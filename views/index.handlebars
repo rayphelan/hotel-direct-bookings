@@ -13,15 +13,19 @@
       <div class="card-body d-flex flex-column align-items-start">
         <strong class="d-inline-block mb-2 text-primary">{{category.name}}</strong>
         <h3 class="mb-0">
-          <a class="text-dark" href="#">{{name}}</a>
+          <a class="text-dark" href="/hotels/profile/{{_id}}">{{name}}</a>
         </h3>
         <div class="mb-1 text-muted"></div>
         <p class="card-text mb-auto">{{county.name}}, {{locationName}}</p>        
         <a href="/hotels/profile/{{_id}}">View</a>        
       </div>
-      <img class="card-img-right flex-auto d-none d-md-block" src="images/pool.jpg" data-src="images/pool.jpg" alt="Card image cap">
+      {{#if photo}}
+      <img class="card-img-right flex-auto d-none d-md-block" src="/uploads/{{photo}}" data-src="images/pool.jpg" alt="{{name}}">
+      {{/if}}
     </div>
   </div>
   {{/each}}
 
 </div>
+
+

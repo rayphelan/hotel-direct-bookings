@@ -83,9 +83,11 @@ app.use(function (req, res, next) {
 const index = require('./routes/index');
 const hotels = require('./routes/hotels');
 const api = require('./api/api');
+const hotel_photos = require('./routes/hotel_photos');
 app.use('/', index);
 app.use('/hotels', hotels);
 app.use('/api', api);
+app.use('/hotel_photos', hotel_photos);
 
 
 

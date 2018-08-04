@@ -23,7 +23,9 @@
     <div class="col-md-12">
 
       <div class="card">
-        <img class="card-img-top" src="/images/pool.jpg" alt="Card image cap">        
+        {{#if hotel.photo}}
+        <img class="card-img-top" src="/uploads/{{hotel.photo}}" alt="Card image cap">        
+        {{/if}}
         <div class="card-body">
 
           {{#if hotel.website}}

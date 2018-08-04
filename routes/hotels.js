@@ -10,6 +10,7 @@ var Hotel = require('../models/hotel');
 var Room = require('../models/room');
 var County = require('../models/county');
 var Category = require('../models/category');
+var HotelPhoto = require('../models/hotel_photo');
 
 // Hotel Dashboard
 router.get('/dashboard', checkIfLoggedIn, function(req, res) {
@@ -33,6 +34,38 @@ router.get('/dashboard', checkIfLoggedIn, function(req, res) {
 
 });
 
+
+// Edit Hotel Photo page
+router.get('/profile/photo', checkIfLoggedIn, function (req, res) {
+  // Perform operations in parallel using Async
+  async.parallel({
+    hotel_photo: callback => {
+      HotelPhoto.findOne({'hotel':req.user._id})
+      .exec(callback);
+    },
+    hotel: callback => {
+      Hotel.findById(req.user._id)
+        .populate('category county')
+        .exec(callback);
+    },
+    counties: callback => {
+      County.find({}).exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+    res.render('hotel-profile-photo', {
+      hotel: results.hotel,
+      hotel_photo: results.hotel_photo,
+      counties: results.counties,
+      categories: results.categories
+    });
+  });
+});
 
 
 // Edit Hotel Profile
@@ -441,7 +474,8 @@ router.post('/profile/edit', checkIfAlreadyRegisered, function (req, res) {
       locationName,
       category,
       stars,
-      website
+      website,
+      photo: req.user.photo
     });
 
     // Update Room
@@ -456,5 +490,10 @@ router.post('/profile/edit', checkIfAlreadyRegisered, function (req, res) {
   }
 
 });
+
+
+
+
+
 
 module.exports = router;
