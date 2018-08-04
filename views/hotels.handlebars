@@ -1,3 +1,4 @@
+{{#if hotels}}
 <div class="row mb-2">
   {{#each hotels}}
   <div class="col-md-6">
@@ -8,7 +9,7 @@
           <a class="text-dark" href="/hotels/profile/{{_id}}">{{name}}</a>
         </h3>
         <div class="mb-1 text-muted"></div>
-        <p class="card-text mb-auto"></p>        
+        <p class="card-text mb-auto">{{category.name}}</p>
         <a href="/hotels/profile/{{_id}}">View</a>        
       </div>
       {{#if photo}}
@@ -17,7 +18,8 @@
     </div>
   </div>
   {{/each}}
-
 </div>
-
+{{else}}
+<div class="alert alert-info">There are currently no accommodations in this section.</div>
+{{/if}}
 

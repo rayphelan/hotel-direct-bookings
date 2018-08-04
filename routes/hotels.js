@@ -23,7 +23,65 @@ router.get('/', (req, res) => {
       Category.find({}).exec(callback);
     },
     hotels: callback => {
-      Hotel.find({}).exec(callback);
+      Hotel.find({})
+      .populate('category county')
+      .exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+    res.render('hotels', {
+      counties: results.counties,
+      categories: results.categories,
+      hotels: results.hotels
+    });
+  });
+});
+
+
+//  Browse Hotels by category
+router.get('/category/:id', (req, res) => {
+  // Perform operations in parallel using Async
+  async.parallel({
+    counties: callback => {
+      County.find().exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    },
+    hotels: callback => {
+      Hotel.find({ 'category': req.params.id })
+      .populate('category county')
+      .exec(callback);
+    }
+  }, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: err });
+    }
+    res.render('hotels', {
+      counties: results.counties,
+      categories: results.categories,
+      hotels: results.hotels
+    });
+  });
+});
+
+
+//  Browse Hotels by county
+router.get('/county/:id', (req, res) => {
+  // Perform operations in parallel using Async
+  async.parallel({
+    counties: callback => {
+      County.find().exec(callback);
+    },
+    categories: callback => {
+      Category.find({}).exec(callback);
+    },
+    hotels: callback => {
+      Hotel.find({ 'county': req.params.id })
+        .populate('category county')
+        .exec(callback);
     }
   }, (err, results) => {
     if (err) {
