@@ -1,0 +1,42 @@
+<div class="login-form mt-50">
+  <div class="main-div">
+
+    <div class="panel">
+
+      <h1>
+        <span class="fa fa-sign-in"></span> Login <br>Trade Partners
+      </h1>
+
+      <p>Please enter your email and password to log into your Trade Partner account</p>
+
+      {{#if errors}}
+        <div class="alert alert-danger">
+          {{#each errors}} {{msg}}. {{/each}}
+        </div>
+      {{/if}}
+
+    </div>
+
+    <form id="loginForm" action="/trade_partners/logintp" method="POST" autocomplete="off">
+
+      <div class="form-group">
+        <input type="text" class="form-control" id="username" name="username" placeholder="Email" autocomplete="off" value="{{username}}">
+      </div>
+
+      <div class="form-group">
+        <input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off" value="{{password}}">
+      </div>
+
+      <button type="submit" class="btn btn-primary bg-success">Login</button>
+
+    </form>
+  </div>
+
+  <p class="botto-text">
+    Need a Trade Partner account?
+    <a href="/registertp">Register</a>
+  </p>
+
+  <div class="spacer-50"></div>
+
+</div>
